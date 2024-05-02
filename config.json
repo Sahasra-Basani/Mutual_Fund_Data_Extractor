@@ -1,0 +1,22 @@
+
+{
+    "database": {
+        "host": "localhost",
+        "port": 5432,
+        "database_name": "postgres",
+        "username": "postgres",
+        "password": "admin123"
+    },
+    "other_settings": {
+        "default_download_path": "C:/Users/Admin/Downloads",
+        "download_path_nippon": "F:/Python Projects/Mutual Fund Data Extractor/Input File/Funds Details/Nippon/",
+        "download_path_hsbc": "F:/Python Projects/Mutual Fund Data Extractor/Input File/Funds Details/HSBC/",
+        "download_path_sbi": "F:/Python Projects/Mutual Fund Data Extractor/Input File/Funds Details/SBI/",
+        "excel_path_nippon": "F:/Python Projects/Mutual Fund Data Extractor/Input File/Funds Details/Nippon/NIMF-MONTHLY-PORTFOLIO-REPORT-",
+        "excel_path_hsbc": "F:/Python Projects/Mutual Fund Data Extractor/Input File/Funds Details/HSBC/",
+        "excel_path_sbi": "F:/Python Projects/Mutual Fund Data Extractor/Input File/Funds Details/SBI/all-schemes-monthly-portfolio---as-on-",
+        "url_nippon": "https://mf.nipponindiaim.com/investor-service/downloads/factsheet-portfolio-and-other-disclosures",
+        "url_hsbc": "https://www.assetmanagement.hsbc.co.in/en/mutual-funds/investor-resources/information-library#&accordion1446811090=2",
+        "url_sbi": "https://www.sbimf.com/portfolios"
+    }
+}

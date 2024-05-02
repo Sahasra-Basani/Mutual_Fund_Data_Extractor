@@ -1,0 +1,12 @@
+requests
+flask
+django
+numpy
+pandas
+beautifulsoup4
+
+selenium
+
+psycopg2
+xlrd
+openpyxl
