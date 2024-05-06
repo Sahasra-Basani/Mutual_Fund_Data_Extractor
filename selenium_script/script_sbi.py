@@ -18,7 +18,7 @@ current_year_yyyy = process_date.current_year_yyyy
 days_in_month = process_date.days_in_month
 date = days_in_month+" "+prev_mon_name_MM+" "+str(current_year_yyyy)
 
-with open("../config.json") as f:
+with open("config.json") as f:
     config = json.load(f)
 
 # Default download directory

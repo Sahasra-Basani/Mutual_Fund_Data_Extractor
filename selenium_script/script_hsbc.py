@@ -1,20 +1,16 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support import expected_conditions as ec
 import time
 import json
 
-with open("../config.json") as f:
+with open("config.json") as f:
     config = json.load(f)
 
-# Create Chrome WebDriver with options to disable notifications
-chrome_options = Options()
-chrome_options.add_argument("--disable-notifications")
-driver = webdriver.Chrome(options=chrome_options)
-
+# Initialize the WebDriver
+driver = webdriver.Chrome()
+print("Chrome Driver Started")
 
 # Url for the webpage
 url = config["other_settings"]["url_hsbc"]
@@ -46,6 +42,21 @@ try:
     # label_element = driver.find_element(By.XPATH,
     #                                     "//label[contains(text(), 'Monthly portfolio for the month of March 2024')]")
 
+    # Wait for the notification dialog to appear
+    try:
+        # Wait for maximum 10 seconds for the dialog to appear
+        notification_dialog = WebDriverWait(driver, 10).until(ec.alert_is_present())
+
+        # Switch to the alert
+        alert = driver.switch_to.alert
+
+        # Accept the alert (allow notifications)
+        alert.dismiss()
+        print("Show notification dialog is dismissed!!!")
+        time.sleep(5)
+    except:
+        print("Show notification dialog is not available!!!")
+
     # Click on the accept all cookies
     accept_cookies_link = driver.find_element(By.XPATH,"//*[@id='consent_prompt_submit']")
 
@@ -64,14 +75,33 @@ try:
 
     time.sleep(5)
 
+    # Wait for the notification dialog to appear
+    try:
+        # Wait for maximum 10 seconds for the dialog to appear
+        notification_dialog = WebDriverWait(driver, 10).until(ec.alert_is_present())
+
+        # Switch to the alert
+        alert = driver.switch_to.alert
+
+        # Accept the alert (allow notifications)
+        alert.dismiss()
+        print("Show notification dialog is dismissed!!!")
+        time.sleep(5)
+    except:
+        print("Show notification dialog is not available!!!")
+
     # Wait for the elements to be clickable
     wait = WebDriverWait(driver, 10)
 
-    # List of texts for the elements you want to click
+    # # List of texts for the elements you want to click
+    # text_list = [
+    #     'HSBC Small Cap Fund as on 31 March 2024',
+    #     'HSBC Mid Cap Fund as on 31 March 2024',
+    #     'HSBC Large Cap Fund as on 31 March 2024',
+    #     'HSBC ELSS Tax Saver Fund as on 31 March 2024'
+    # ]
+
     text_list = [
-        'HSBC Small Cap Fund as on 31 March 2024',
-        'HSBC Mid Cap Fund as on 31 March 2024',
-        'HSBC Large Cap Fund as on 31 March 2024',
         'HSBC ELSS Tax Saver Fund as on 31 March 2024'
     ]
 
@@ -80,15 +110,6 @@ try:
         # Construct XPath to find the element by its text
         xpath = f'//*[contains(text(), "{text}")]'
         print("xpath", xpath)
-
-        # Wait for the element to be clickable
-        # element = wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
-
-        try:
-            # Wait for the interfering element to disappear
-            WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CLASS_NAME, "utility-bar__inner")))
-        except TimeoutException:
-            print("Interfering element did not disappear within the specified timeout period")
 
         # Find the element you want to click
         element = driver.find_element(By.XPATH, xpath)

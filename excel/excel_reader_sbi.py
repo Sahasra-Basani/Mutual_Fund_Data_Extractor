@@ -4,7 +4,7 @@ import process_date
 from database.database import connect_to_db
 import json
 
-with open("../config.json") as f:
+with open("config.json") as f:
     config = json.load(f)
 
 # Current date and time
@@ -52,7 +52,7 @@ def insert_in_stock_table():
                 insert_in_fund_table(worksheet)
 
                 # Define the list of column indices you want to read
-                columns_to_read = [2, 3, 4, 7]  # Columns 3, 4, 5, and 8 (0-indexed)
+                columns_to_read = [2, 3, 4, 5, 6, 7]  # Columns 3, 4, 5, and 8 (0-indexed)
 
                 # Define the starting row 10
                 start_row = 9  # Row 10 (0-indexed)
@@ -63,7 +63,12 @@ def insert_in_stock_table():
                     column1_value = row[2]  # Assuming column 3 is the first column
                     column2_value = row[3]  # Assuming column 4 is the second column
                     column3_value = row[4]  # Assuming column 5 is the third column
-                    column6_value = row[7]  # Assuming column 8 is the sixth column
+                    column4_value = row[5]  # Assuming column 5 is the third column
+                    column5_value = row[6]  # Assuming column 5 is the third column
+                    if row[7] == '#':
+                        column6_value = 0.00
+                    else:
+                        column6_value = row[7]  # Assuming column 8 is the sixth column
 
                     # Check if the value in column 4 is not null
                     if row[3] is not None and row[3].startswith('IN'):
@@ -85,8 +90,8 @@ def insert_in_stock_table():
                         try:
                             # Insert data into the database in stock_details table
                             cursor.execute('''INSERT INTO mutual_fund_data.stock_details(fund_id, created_date, mon_yr,
-                                                    category, stock_name, isin_no , industry, holding_share)
-                                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''',
+                                                    category, stock_name, isin_no , industry, quantity, amount, holding_share)
+                                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
                                            (fund_id,
                                             current_date,
                                             mon_yr,
@@ -94,6 +99,8 @@ def insert_in_stock_table():
                                             column1_value,
                                             column2_value,
                                             column3_value,
+                                            column4_value,
+                                            column5_value,
                                             column6_value))
 
                         except Exception as e:

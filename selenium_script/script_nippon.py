@@ -11,7 +11,8 @@ prev_mon_name_MM = process_date.prev_mon_name_MM
 # Get the current year YYYY
 current_year_yyyy = process_date.current_year_yyyy
 
-with open("../config.json") as f:
+# with open("../config.json") as f:
+with open("config.json") as f:
     config = json.load(f)
 
 # Default download directory

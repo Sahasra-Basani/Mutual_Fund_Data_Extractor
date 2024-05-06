@@ -4,7 +4,7 @@ import json
 import openpyxl
 import process_date
 
-with open("../config.json") as f:
+with open("config.json") as f:
     config = json.load(f)
 
 # Current date and time
@@ -23,6 +23,7 @@ current_year_yyyy = process_date.current_year_yyyy
 def insert_in_stock_table():
     category = ""
     fund_id = 0
+    cell_val_6 = 0.00
 
     try:
 
@@ -54,18 +55,23 @@ def insert_in_stock_table():
                 insert_in_fund_table(worksheet)
 
                 # Define the list of column indices you want to read
-                columns_to_read = [0, 1, 2, 5]  # Columns 1, 2, 3 and 6 (0-indexed)
+                columns_to_read = [0, 1, 2, 3, 4, 5]  # Columns 1, 2, 3, 4, 5 and 6 (0-indexed)
 
                 # Define the starting row 11
                 start_row = 10  # Row 11 (0-indexed)
 
                 # Iterate over rows starting from the second row (assuming the first row is headers)
                 for row in worksheet.iter_rows(min_row=10, values_only=True):
-                    # Extract data from the row
-                    column1_value = row[0]  # Assuming column 1 is the first column
-                    column2_value = row[1]  # Assuming column 2 is the second column
-                    column3_value = row[2]  # Assuming column 3 is the third column
-                    column6_value = row[5]  # Assuming column 6 is the sixth column
+                    # Extract data from the row - Columns 1, 2, 3, 4, 5 and 6 (0-indexed)
+                    column1_value = row[0]
+                    column2_value = row[1]
+                    column3_value = row[2]
+                    column4_value = row[3]
+                    column5_value = row[4]
+
+                    if row[5]:
+                        cell_value_6 = str(row[5]).replace('$', '').replace('%', '')
+                        cell_val_6 = round(float(cell_value_6) * 100, 2)
 
                     # Check if the value in column 2 is not null
                     if row[1] is not None and row[1].startswith('IN'):
@@ -87,8 +93,8 @@ def insert_in_stock_table():
                         try:
                             # Insert data into the database in stock_details table
                             cursor.execute('''INSERT INTO mutual_fund_data.stock_details(fund_id, created_date, mon_yr,
-                                    category, stock_name, isin_no , industry, holding_share)
-                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''',
+                                    category, stock_name, isin_no , industry, quantity, amount, holding_share)
+                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
                                            (fund_id,
                                             current_date,
                                             mon_yr,
@@ -96,7 +102,9 @@ def insert_in_stock_table():
                                             column1_value,
                                             column2_value,
                                             column3_value,
-                                            column6_value))
+                                            column4_value,
+                                            column5_value,
+                                            cell_val_6))
 
                         except Exception as e:
                             print("Issue occurred inserting dta into database in stock_details table!!!", str(e))
