@@ -145,3 +145,33 @@ function enableDropdowns() {
         addButton.disabled = false;
     }
 }
+
+function search() {
+    const category = document.getElementById('category').value;
+    const fundName = document.getElementById('fund_name').value;
+
+    // Collect values from additional dropdowns
+    const additionalDropdownValues = [];
+    for (let i = 3; i <= 5; i++) {
+        const dropdownValue = document.getElementById(`dropdown_${i}`).value;
+        if (dropdownValue) {
+            additionalDropdownValues.push(dropdownValue);
+        }
+    }
+
+    // Make AJAX request to Flask server
+    fetch(`/search?category=${category}&fund_name=${fundName}&additional_values=${additionalDropdownValues.join(',')}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Process the fetched data
+            console.log('Search results:', data);
+        })
+        .catch(error => {
+            console.error('Error searching:', error);
+        });
+}
