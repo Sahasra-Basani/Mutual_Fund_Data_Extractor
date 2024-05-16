@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fund Search</title>
+<title>Stocks Search</title>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
@@ -28,18 +28,27 @@
       </select>
     </div>
     <div id="btn-search" class="btn-search">
-      <button onclick="search()">Compare</button>
+      <button onclick="compare()">Compare</button>
     </div>
 
   </div>
 
-  <div id="output" class="output">
-    <!-- Output will be displayed here -->
-  </div>
-
   <div id="add-dropdown" class="add-dropdown">
     <button id="btn-add-dropdown" onclick="addDropdown()" disabled>Add Dropdown</button>
+    <button id="btn-remove-dropdown" onclick="removeDropdown()" disabled>Remove Dropdown</button>
   </div>
+
+  <div id="output" class="output">
+    <table id="comparison-table">
+      <thead>
+        <!-- Table header will be populated dynamically -->
+      </thead>
+      <tbody>
+        <!-- Table body will be populated dynamically -->
+      </tbody>
+    </table>
+  </div>
+
 </div>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>

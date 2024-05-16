@@ -1,10 +1,3 @@
-function search() {
-  const category = document.getElementById('category').value;
-  const fundName = document.getElementById('fund_name').value;
-  console.log('Search clicked. Category:', category, 'Fund Name:', fundName);
-  // Perform search based on category and fund name
-}
-
 function addDropdown() {
     const dropdownContainer = document.querySelector('.search-form');
     const dropdownCount = dropdownContainer.querySelectorAll('.dropdown').length;
@@ -37,8 +30,11 @@ function addDropdown() {
     // Populate the newly added dropdown with the same data as the fund_name dropdown
     populateNewDropdown(dropdownCount + 1);
 
-    //newDropdown.addEventListener('change', populateNewDropdown);
-
+    // Enable the remove dropdown button
+    const removeButton = document.getElementById('btn-remove-dropdown');
+    if (removeButton) {
+        removeButton.disabled = false;
+    }
 }
 
 function populateNewDropdown(newDropdownIndex) {
@@ -146,32 +142,112 @@ function enableDropdowns() {
     }
 }
 
-function search() {
+function compare() {
+    // Collect values from category and fund_name dropdowns
     const category = document.getElementById('category').value;
     const fundName = document.getElementById('fund_name').value;
 
-    // Collect values from additional dropdowns
+    // Collect values from additional dropdowns, if present
     const additionalDropdownValues = [];
     for (let i = 3; i <= 5; i++) {
-        const dropdownValue = document.getElementById(`dropdown_${i}`).value;
-        if (dropdownValue) {
-            additionalDropdownValues.push(dropdownValue);
+        const dropdown = document.getElementById(`dropdown_${i}`);
+        if (dropdown) {
+            const dropdownValue = dropdown.value;
+            if (dropdownValue) {
+                additionalDropdownValues.push(dropdownValue);
+            }
         }
     }
 
-    // Make AJAX request to Flask server
-    fetch(`/search?category=${category}&fund_name=${fundName}&additional_values=${additionalDropdownValues.join(',')}`)
+    console.log('category-', category)
+    console.log('fundName-', fundName)
+    console.log('additionalDropdownValues-', additionalDropdownValues)
+
+    // Combine all fund names including the fund_name dropdown and additional dropdowns
+    const allFundNames = [fundName, ...additionalDropdownValues].filter(value => value !== '');
+    console.log('allFundNames-', allFundNames)
+
+    // Make AJAX request to Flask server for comparison
+    fetch(`/compare?category=${category}&fund_name=${allFundNames}`)
         .then(response => {
+            console.log("response:", response)
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             return response.json();
         })
         .then(data => {
-            // Process the fetched data
-            console.log('Search results:', data);
+            // Process the fetched data and display comparison results
+            console.log('Comparison results:', data);
+            const numColumns = data.length > 0 ? data[0].length : 0; // Determine the number of columns
+            displayComparisonResults(data, numColumns); // Pass numColumns to the displayComparisonResults function
         })
         .catch(error => {
-            console.error('Error searching:', error);
+            console.error('Error comparing funds:', error);
         });
 }
+
+function displayComparisonResults(data, numColumns) {
+    const tableBody = document.querySelector('#comparison-table tbody');
+    tableBody.innerHTML = ''; // Clear existing table body
+
+    // Create table headers dynamically
+    const tableHeader = document.querySelector('#comparison-table thead');
+    tableHeader.innerHTML = ''; // Clear existing table header
+    const headerRow = document.createElement('tr');
+
+    // Define column names based on the number of columns
+    let columnNames;
+    if (numColumns === 4) {
+        columnNames = ['ISIN No', 'Stock Name', 'Stock Count', 'Fund Names List'];
+    } else if (numColumns === 3) {
+        columnNames = ['ISIN No', 'Stock Name', 'Fund Names'];
+    } else {
+        columnNames = Array.from({ length: numColumns }, (_, i) => `Column ${i + 1}`);
+    }
+
+    // Populate table headers with column names
+    columnNames.forEach(columnName => {
+        const headerCell = document.createElement('th');
+        headerCell.textContent = columnName;
+        headerRow.appendChild(headerCell);
+    });
+    tableHeader.appendChild(headerRow);
+
+    // Populate table with comparison results
+    data.forEach(rowData => {
+        const newRow = document.createElement('tr');
+        rowData.forEach(value => {
+            const newCell = document.createElement('td');
+            newCell.textContent = value;
+            newRow.appendChild(newCell);
+        });
+        tableBody.appendChild(newRow);
+    });
+}
+
+function removeDropdown() {
+
+    console.log("CLicked!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+    const dropdownContainer = document.querySelector('.search-form');
+    const dropdowns = dropdownContainer.querySelectorAll('.dropdown');
+    const dropdownCount = dropdowns.length;
+
+    if (dropdownCount > 2) { // Ensure there are more than two dropdowns (category and fund name)
+        const lastDropdown = dropdowns[dropdownCount - 1];
+        dropdownContainer.removeChild(lastDropdown);
+    }
+
+    // Disable the "Remove Dropdown" button if there are only two dropdowns left
+    const removeButton = document.getElementById('btn-remove-dropdown');
+    removeButton.disabled = dropdownContainer.querySelectorAll('.dropdown').length <= 2;
+
+    // Enable the "Add Dropdown" button when a dropdown is removed
+    const addButton = document.getElementById('btn-add-dropdown');
+    addButton.disabled = false;
+}
+
+
+// Add event listener to the Compare button
+document.getElementById('btn-compare').addEventListener('click', compare);
