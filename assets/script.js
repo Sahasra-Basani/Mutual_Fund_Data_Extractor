@@ -1,3 +1,59 @@
+function uploadExcel() {
+    // Get the file path entered by the user
+    const filePath = document.getElementById('upload-input').value;
+    console.log("filePath:", filePath)
+
+    if(filePath) {
+
+        // Check if a file path was entered
+        if (filePath.trim() === '') {
+            alert('Please enter a file path.');
+            return;
+        }
+
+        // Send the file path to the Flask route for processing
+        fetch('/upload_excel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ file_path: filePath })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error uploading file');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                console.log('File uploaded successfully:', data);
+                // Display success message
+                const messageElement = document.getElementById('upload-message');
+                messageElement.textContent = data.message;
+                messageElement.style.color = 'green';
+                messageElement.style.display = 'block';
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Display error message
+            const messageElement = document.getElementById('upload-message');
+            messageElement.textContent = 'Error uploading file. Please try again.';
+            messageElement.style.color = 'red';
+            messageElement.style.display = 'block';
+        });
+    } else {
+        console.error('File path not entered');
+        const messageElement = document.getElementById('upload-message');
+        messageElement.textContent = 'Error uploading file. File path not entered.';
+        messageElement.style.color = 'red';
+        messageElement.style.display = 'block';
+    }
+}
+
 function addDropdown() {
     const dropdownContainer = document.querySelector('.search-form');
     const dropdownCount = dropdownContainer.querySelectorAll('.dropdown').length;
@@ -196,6 +252,11 @@ function displayComparisonResults(data, numColumns) {
     tableHeader.innerHTML = ''; // Clear existing table header
     const headerRow = document.createElement('tr');
 
+    // Add serial number header
+    const serialNumberHeader = document.createElement('th');
+    serialNumberHeader.textContent = 'Sr. No';
+    headerRow.appendChild(serialNumberHeader);
+
     // Define column names based on the number of columns
     let columnNames;
     if (numColumns === 4) {
@@ -215,8 +276,14 @@ function displayComparisonResults(data, numColumns) {
     tableHeader.appendChild(headerRow);
 
     // Populate table with comparison results
+    let counter = 1;
     data.forEach(rowData => {
         const newRow = document.createElement('tr');
+
+        const serialNumberCell = document.createElement('td');
+        serialNumberCell.textContent = counter++;
+        newRow.appendChild(serialNumberCell);
+
         rowData.forEach(value => {
             const newCell = document.createElement('td');
             newCell.textContent = value;
@@ -248,6 +315,6 @@ function removeDropdown() {
     addButton.disabled = false;
 }
 
-
 // Add event listener to the Compare button
 document.getElementById('btn-compare').addEventListener('click', compare);
+

@@ -12,6 +12,7 @@
         "download_path_nippon": "F:/Python Projects/Mutual Fund Data Extractor/Input File/Funds Details/Nippon/",
         "download_path_hsbc": "F:/Python Projects/Mutual Fund Data Extractor/Input File/Funds Details/HSBC/",
         "download_path_sbi": "F:/Python Projects/Mutual Fund Data Extractor/Input File/Funds Details/SBI/",
+        "excel_path_all": "F:/Python Projects/Mutual Fund Data Extractor/Input File/Funds Details/",
         "excel_path_nippon": "F:/Python Projects/Mutual Fund Data Extractor/Input File/Funds Details/Nippon/NIMF-MONTHLY-PORTFOLIO-REPORT-",
         "excel_path_hsbc": "F:/Python Projects/Mutual Fund Data Extractor/Input File/Funds Details/HSBC/",
         "excel_path_sbi": "F:/Python Projects/Mutual Fund Data Extractor/Input File/Funds Details/SBI/all-schemes-monthly-portfolio---as-on-",

@@ -2,22 +2,22 @@ import os.path
 from database.database import connect_to_db
 import json
 import openpyxl
-import process_date
+from process_date import DateDetails as Dd
 
 with open("config.json") as f:
     config = json.load(f)
 
 # Current date and time
-current_date = process_date.current_date
+current_date = Dd.current_date
 
 # Get the name of the previous month in abbreviated form
-prev_mon_name = process_date.prev_mon_name_mm.lower()
+prev_mon_name = Dd.prev_mon_name_mm.lower()
 
 # Get the name of the previous month
-prev_mon_full = process_date.prev_mon_name_MM
+prev_mon_full = Dd.prev_mon_name_MM
 
 # Get the current year four digits
-current_year_yyyy = process_date.current_year_yyyy
+current_year_yyyy = Dd.current_year_yyyy
 
 
 def insert_in_stock_table():

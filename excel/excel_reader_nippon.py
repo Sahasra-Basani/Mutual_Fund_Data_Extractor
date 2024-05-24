@@ -1,21 +1,21 @@
 import os.path
 import xlrd
 from database.database import connect_to_db
-import process_date
+from process_date import DateDetails as Dd
 import json
 
 with open("config.json") as f:
     config = json.load(f)
 
 # Get current date and time
-current_date = process_date.current_date
+current_date = Dd.current_date
 
 # Get the previous month
-prev_mon_name_MM = process_date.prev_mon_name_MM
+prev_mon_name_MM = Dd.prev_mon_name_MM
 
 # Get the current year YYYY
-current_year_yyyy = process_date.current_year_yyyy
-current_year_yy = process_date.current_year_yy
+current_year_yyyy = Dd.current_year_yyyy
+current_year_yy = Dd.current_year_yy
 
 
 def insert_in_stock_table():
