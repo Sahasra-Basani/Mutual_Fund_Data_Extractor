@@ -63,12 +63,14 @@ def insert_in_stock_table(file_n):
                     category = "Large Cap"
                 elif 'Tax' in sheet_name:
                     category = "Tax Saver"
+                else:
+                    category = "Others"
 
                 # Define the list of column indices you want to read
                 columns_to_read = [0, 1, 2, 3, 4, 5]  # Columns 1, 2, 3, 4, 5 and 6 (0-indexed)
 
                 # Get fund_id from fund_details table
-                fund_id = get_fund_id(category, filename)
+                fund_id = get_fund_id(sheet_name, filename)
 
                 # Define the starting row 2
                 start_row = 1  # Row 2 (0-indexed)

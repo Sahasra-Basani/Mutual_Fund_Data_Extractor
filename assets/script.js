@@ -177,6 +177,11 @@ function updateDropdownOptions(dropdown, options) {
 
     console.log("In the updateDropdownOptions!!!!!!!!!!!!!!!!");
 
+    const allOption = document.createElement('option');
+    allOption.value = 'All';
+    allOption.textContent = 'All';
+    dropdown.appendChild(allOption);
+
     options.forEach(option => {
         const optionElement = document.createElement('option');
         optionElement.value = option;

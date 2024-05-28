@@ -102,9 +102,8 @@ def compare_funds():
     print('len_fund app:', len_fund)
 
     if category == 'All' or category == 'ALL':
-        print("Category All!!!!!!!!!!!!!!!!")
-        if len_fund > 1:
-            # Construct the query dynamically based on selected values
+        if 'All' in fund_names:
+            print("Fund Name All!!!!!!!!!!!!!!!!")
             query = f"""
             SELECT sd.isin_no,
             MAX(sd.stock_name) AS stock_name,
@@ -119,30 +118,36 @@ def compare_funds():
             ) AS fund_name_list
             FROM mutual_fund_data.stock_details sd
             JOIN mutual_fund_data.fund_details fd ON sd.fund_id = fd.id
-            WHERE fd.fund_name IN ({fund_names})
             GROUP BY sd.isin_no
             ORDER BY common_stocks_count desc;
             """
         else:
-            query = f"""
-            SELECT sd.isin_no, sd.stock_name, 
-            CASE 
-                WHEN POSITION('(' IN fd.fund_name) > 0 THEN 
-                    LEFT(fd.fund_name, POSITION('(' IN fd.fund_name) - 1) 
-                ELSE 
-                    fd.fund_name 
-            END AS fund_name 
-            FROM mutual_fund_data.stock_details sd
-            JOIN mutual_fund_data.fund_details fd ON sd.fund_id = fd.id
-            WHERE fd.fund_name = {fund_names}
-            ORDER BY sd.isin_no;
-            """
-
-            # Execute the query
-            # cursor.execute(query)
+            print("Fund Name Available!!!!!!!!!!!!!!!!")
+            if len_fund > 1:
+                # Construct the query dynamically based on selected values
+                query = f"""
+                SELECT sd.isin_no,
+                MAX(sd.stock_name) AS stock_name,
+                COUNT(sd.isin_no) AS common_stocks_count,
+                STRING_AGG(
+                CASE 
+                    WHEN POSITION('(' IN fd.fund_name) > 0 THEN 
+                        LEFT(fd.fund_name, POSITION('(' IN fd.fund_name) - 1) 
+                    ELSE 
+                        fd.fund_name 
+                END, ', '
+                ) AS fund_name_list
+                FROM mutual_fund_data.stock_details sd
+                JOIN mutual_fund_data.fund_details fd ON sd.fund_id = fd.id
+                WHERE fd.fund_name IN ({fund_names})
+                GROUP BY sd.isin_no
+                ORDER BY common_stocks_count desc;
+                """
+            else:
+                query = query_fundwise_data(fund_names)
     else:
-        if len_fund > 1:
-            # Construct the query dynamically based on selected values
+        if 'All' in fund_names:
+            print("Fund Name All!!!!!!!!!!!!!!!!")
             query = f"""
             SELECT sd.isin_no,
             MAX(sd.stock_name) AS stock_name,
@@ -157,27 +162,34 @@ def compare_funds():
             ) AS fund_name_list
             FROM mutual_fund_data.stock_details sd
             JOIN mutual_fund_data.fund_details fd ON sd.fund_id = fd.id
-            WHERE fd.fund_name IN ({fund_names})
-            AND sd.category = '{category}'
+            WHERE sd.category = '{category}'
             GROUP BY sd.isin_no
             ORDER BY common_stocks_count desc;
             """
-
         else:
-            query = f"""
-            SELECT sd.isin_no, sd.stock_name, 
-            CASE 
-                WHEN POSITION('(' IN fd.fund_name) > 0 THEN 
-                    LEFT(fd.fund_name, POSITION('(' IN fd.fund_name) - 1) 
-                ELSE 
-                    fd.fund_name 
-            END AS fund_name 
-            FROM mutual_fund_data.stock_details sd
-            JOIN mutual_fund_data.fund_details fd ON sd.fund_id = fd.id
-            WHERE fd.fund_name = {fund_names}
-            AND sd.category = '{category}' 
-            ORDER BY sd.isin_no;
-            """
+            if len_fund > 1:
+                # Construct the query dynamically based on selected values
+                query = f"""
+                SELECT sd.isin_no,
+                MAX(sd.stock_name) AS stock_name,
+                COUNT(sd.isin_no) AS common_stocks_count,
+                STRING_AGG(
+                CASE 
+                    WHEN POSITION('(' IN fd.fund_name) > 0 THEN 
+                        LEFT(fd.fund_name, POSITION('(' IN fd.fund_name) - 1) 
+                    ELSE 
+                        fd.fund_name 
+                END, ', '
+                ) AS fund_name_list
+                FROM mutual_fund_data.stock_details sd
+                JOIN mutual_fund_data.fund_details fd ON sd.fund_id = fd.id
+                WHERE fd.fund_name IN ({fund_names})
+                AND sd.category = '{category}'
+                GROUP BY sd.isin_no
+                ORDER BY common_stocks_count desc;
+                """
+            else:
+                query = query_fundwise_data(fund_names)
 
     # Execute the query
     cursor.execute(query)
@@ -188,6 +200,24 @@ def compare_funds():
 
     # Convert results to JSON and return
     return jsonify(comparison_results)
+
+
+def query_fundwise_data(fund_names):
+    if fund_names:
+        query = f"""
+        SELECT sd.isin_no, sd.stock_name, 
+        CASE 
+            WHEN POSITION('(' IN fd.fund_name) > 0 THEN 
+                LEFT(fd.fund_name, POSITION('(' IN fd.fund_name) - 1) 
+            ELSE 
+                fd.fund_name 
+        END AS fund_name 
+        FROM mutual_fund_data.stock_details sd
+        JOIN mutual_fund_data.fund_details fd ON sd.fund_id = fd.id
+        WHERE fd.fund_name = {fund_names}
+        ORDER BY sd.isin_no;
+        """
+        return query
 
 
 if __name__ == '__main__':
