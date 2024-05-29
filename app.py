@@ -2,28 +2,18 @@ from flask import Flask, render_template, jsonify, request, make_response
 import psycopg2
 from excel.excel_reader_All import insert_in_stock_table
 import os
+import json
+
+with open("config.json") as f:
+    config = json.load(f)
 
 app = Flask(__name__, template_folder='html', static_folder='assets')
 
 # PostgreSQL database configuration
-DB_HOST = 'localhost'
-DB_NAME = 'postgres'
-DB_USER = 'postgres'
-DB_PASSWORD = 'admin123'
-
-#
-# @app.route('/upload_excel', methods=['POST'])
-# def upload_excel():
-#     file = request.files['file']
-#     print("file:", file.filename)
-#     if file:
-#
-#         # insert_in_stock_table(file.filename)
-#
-#         # Save or process the file here
-#         return jsonify({'success': True, 'message': 'File uploaded successfully'})
-#     else:
-#         return jsonify({'success': False, 'message': 'No file uploaded'})
+DB_HOST = config["database"]["host"]
+DB_NAME = config["database"]["database_name"]
+DB_USER = config["database"]["username"]
+DB_PASSWORD = config["database"]["password"]
 
 
 @app.route('/upload_excel', methods=['POST'])
@@ -108,6 +98,9 @@ def compare_funds():
             SELECT sd.isin_no,
             MAX(sd.stock_name) AS stock_name,
             COUNT(sd.isin_no) AS common_stocks_count,
+            SUM(
+                CAST(sd.amount AS NUMERIC)
+            ) AS invested_amount,
             STRING_AGG(
             CASE 
                 WHEN POSITION('(' IN fd.fund_name) > 0 THEN 
@@ -129,6 +122,9 @@ def compare_funds():
                 SELECT sd.isin_no,
                 MAX(sd.stock_name) AS stock_name,
                 COUNT(sd.isin_no) AS common_stocks_count,
+                SUM(
+                    CAST(sd.amount AS NUMERIC)
+                ) AS invested_amount,
                 STRING_AGG(
                 CASE 
                     WHEN POSITION('(' IN fd.fund_name) > 0 THEN 
@@ -152,6 +148,9 @@ def compare_funds():
             SELECT sd.isin_no,
             MAX(sd.stock_name) AS stock_name,
             COUNT(sd.isin_no) AS common_stocks_count,
+            SUM(
+                CAST(sd.amount AS NUMERIC)
+            ) AS invested_amount,
             STRING_AGG(
             CASE 
                 WHEN POSITION('(' IN fd.fund_name) > 0 THEN 
@@ -173,6 +172,9 @@ def compare_funds():
                 SELECT sd.isin_no,
                 MAX(sd.stock_name) AS stock_name,
                 COUNT(sd.isin_no) AS common_stocks_count,
+                SUM(
+                    CAST(sd.amount AS NUMERIC)
+                ) AS invested_amount,
                 STRING_AGG(
                 CASE 
                     WHEN POSITION('(' IN fd.fund_name) > 0 THEN 
@@ -206,6 +208,9 @@ def query_fundwise_data(fund_names):
     if fund_names:
         query = f"""
         SELECT sd.isin_no, sd.stock_name, 
+        SUM(
+            CAST(sd.amount AS NUMERIC)
+        ) AS invested_amount,
         CASE 
             WHEN POSITION('(' IN fd.fund_name) > 0 THEN 
                 LEFT(fd.fund_name, POSITION('(' IN fd.fund_name) - 1) 

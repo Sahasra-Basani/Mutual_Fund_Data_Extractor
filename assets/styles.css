@@ -1,76 +1,128 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f2f2f2;
+/* CSS Styles */
+
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa; /* Light gray background */
+}
+
 .container {
-  max-width: 800px;
+  max-width: 95%;
   margin: 50px auto;
   padding: 20px;
-  background-color: #fff;
-  border-radius: 5px;
+  background-color: #002bff2e;
+  border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
   text-align: center;
-  color: #333;
+  color: #333333; /* Dark gray text */
+  margin-bottom: 20px;
 }
 
 .search-form {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
   margin-bottom: 20px;
 }
 
 .dropdown {
-  flex: 1;
-  margin-right: 20px;
+  flex: 1 1 200px; /* Allow dropdowns to grow but not shrink below 200px */
+  margin: 0 10px;
 }
 
 .dropdown label {
   display: block;
   margin-bottom: 5px;
+  color: #666666;
+  font-size: 18px;
+  font-family: serif;
+  font-weight: bold;
 }
 
 .dropdown select {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #ced4da; /* Light border */
   border-radius: 5px;
-  box-sizing: border-box;
+  background-color: #ffffff; /* White background */
 }
 
 button {
   padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
+  background-color: #007bff; /* Blue button */
+  color: #ffffff; /* White text */
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #0056b3; /* Darker blue on hover */
 }
 
 .output {
   margin-top: 20px;
-  padding: 20px;
-  font-size: 12px;
 }
 
-.add-dropdown {
+#comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#comparison-table th,
+#comparison-table td {
+  border: 1px solid #666666; /* Light gray border */
+  padding: 8px;
+  text-align: left;
+  font-size: 14px;
+  background-color: #5aa72830;
+}
+
+#comparison-table th {
+  background-color: #f2f2f2; /* Light gray background for table header */
   text-align: center;
 }
 
-.add-dropdown button {
-  background-color: #28a745;
+.file-upload {
+  margin-bottom: 20px;
 }
 
-.add-dropdown button:hover {
-  background-color: #218838;
+.upload-message {
+  color: #28a745; /* Green color for success message */
+}
+
+.input {
+    width: 400px;
+    height: 39px;
+    border-radius: 5px;
+    border: 0px;
+    margin: 10px 0px;
+}
+
+h5 {
+    display: block;
+    margin-bottom: 5px;
+    color: #666666;
+    font-size: 18px;
+    font-family: serif;
+    font-weight: bold;
+}
+
+.add-dropdown {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.add-dropdown button {
+  margin: 0 10px;
 }

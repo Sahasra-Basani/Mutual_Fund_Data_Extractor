@@ -264,10 +264,10 @@ function displayComparisonResults(data, numColumns) {
 
     // Define column names based on the number of columns
     let columnNames;
-    if (numColumns === 4) {
-        columnNames = ['ISIN No', 'Stock Name', 'Stock Count', 'Fund Names List'];
-    } else if (numColumns === 3) {
-        columnNames = ['ISIN No', 'Stock Name', 'Fund Names'];
+    if (numColumns === 5) {
+        columnNames = ['ISIN No', 'Stock Name', 'Stock Count', 'Invested Amount', 'Fund Names List'];
+    } else if (numColumns === 4) {
+        columnNames = ['ISIN No', 'Stock Name', 'Amount', 'Fund Names',];
     } else {
         columnNames = Array.from({ length: numColumns }, (_, i) => `Column ${i + 1}`);
     }
@@ -322,4 +322,25 @@ function removeDropdown() {
 
 // Add event listener to the Compare button
 document.getElementById('btn-compare').addEventListener('click', compare);
+
+// Get the input element
+const uploadInput = document.getElementById('upload-input');
+
+// Function to adjust input width
+function adjustInputWidth() {
+    console.log("Input value changed");
+    // Get the width of the text content
+    const textWidth = uploadInput.value.length * 8; // Adjust the multiplier as needed
+
+    // Set the minimum width for the input
+    const minWidth = 100;
+
+    // Set the width of the input dynamically
+    uploadInput.style.width = Math.max(minWidth, textWidth) + 'px';
+}
+
+// Call the adjustInputWidth function whenever the input value changes
+uploadInput.addEventListener('input', adjustInputWidth);
+
+
 
