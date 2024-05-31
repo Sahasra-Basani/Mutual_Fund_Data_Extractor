@@ -264,10 +264,10 @@ function displayComparisonResults(data, numColumns) {
 
     // Define column names based on the number of columns
     let columnNames;
-    if (numColumns === 5) {
-        columnNames = ['ISIN No', 'Stock Name', 'Stock Count', 'Invested Amount', 'Fund Names List'];
-    } else if (numColumns === 4) {
-        columnNames = ['ISIN No', 'Stock Name', 'Amount', 'Fund Names',];
+    if (numColumns === 6) {
+        columnNames = ['ISIN No', 'Month Year', 'Stock Name', 'Stock Count', 'Invested Amount', 'Fund Names List'];
+    } else if (numColumns === 7) {
+        columnNames = ['ISIN No', 'Month Year', 'Stock Name', 'Quantity', 'Invested Amount', 'Holding %', 'Fund Names',];
     } else {
         columnNames = Array.from({ length: numColumns }, (_, i) => `Column ${i + 1}`);
     }

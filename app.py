@@ -95,7 +95,8 @@ def compare_funds():
         if 'All' in fund_names:
             print("Fund Name All!!!!!!!!!!!!!!!!")
             query = f"""
-            SELECT sd.isin_no,
+            SELECT sd.isin_no, 
+            MAX(mon_yr) AS max_mon_yr,
             MAX(sd.stock_name) AS stock_name,
             COUNT(sd.isin_no) AS common_stocks_count,
             SUM(
@@ -119,7 +120,8 @@ def compare_funds():
             if len_fund > 1:
                 # Construct the query dynamically based on selected values
                 query = f"""
-                SELECT sd.isin_no,
+                SELECT sd.isin_no, 
+                MAX(mon_yr) AS max_mon_yr,
                 MAX(sd.stock_name) AS stock_name,
                 COUNT(sd.isin_no) AS common_stocks_count,
                 SUM(
@@ -145,7 +147,8 @@ def compare_funds():
         if 'All' in fund_names:
             print("Fund Name All!!!!!!!!!!!!!!!!")
             query = f"""
-            SELECT sd.isin_no,
+            SELECT sd.isin_no, 
+            MAX(mon_yr) AS max_mon_yr,
             MAX(sd.stock_name) AS stock_name,
             COUNT(sd.isin_no) AS common_stocks_count,
             SUM(
@@ -169,7 +172,8 @@ def compare_funds():
             if len_fund > 1:
                 # Construct the query dynamically based on selected values
                 query = f"""
-                SELECT sd.isin_no,
+                SELECT sd.isin_no, 
+                MAX(mon_yr) AS max_mon_yr,
                 MAX(sd.stock_name) AS stock_name,
                 COUNT(sd.isin_no) AS common_stocks_count,
                 SUM(
@@ -207,10 +211,7 @@ def compare_funds():
 def query_fundwise_data(fund_names):
     if fund_names:
         query = f"""
-        SELECT sd.isin_no, sd.stock_name, 
-        SUM(
-            CAST(sd.amount AS NUMERIC)
-        ) AS invested_amount,
+        SELECT sd.isin_no, sd.mon_yr, sd.stock_name, sd.quantity, sd.amount, sd.holding_share, 
         CASE 
             WHEN POSITION('(' IN fd.fund_name) > 0 THEN 
                 LEFT(fd.fund_name, POSITION('(' IN fd.fund_name) - 1) 
@@ -220,7 +221,7 @@ def query_fundwise_data(fund_names):
         FROM mutual_fund_data.stock_details sd
         JOIN mutual_fund_data.fund_details fd ON sd.fund_id = fd.id
         WHERE fd.fund_name = {fund_names}
-        ORDER BY sd.isin_no;
+        ORDER BY sd.holding_share desc;
         """
         return query
 

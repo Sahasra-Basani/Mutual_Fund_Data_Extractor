@@ -52,8 +52,8 @@ def insert_in_stock_table(file_n):
                 # Select a worksheet
                 worksheet = workbook.sheet_by_name(sheet_name)
 
-                # Insert data in the fund_details table
-                insert_in_fund_table(current_date, sheet_name, filename)
+                # Get fund_id from fund_details table
+                fund_id = get_fund_id(sheet_name, filename)
 
                 if 'Small' in sheet_name:
                     category = "Small Cap"
@@ -66,54 +66,104 @@ def insert_in_stock_table(file_n):
                 else:
                     category = "Others"
 
-                # Define the list of column indices you want to read
+                    # Define the list of column indices you want to read
                 columns_to_read = [0, 1, 2, 3, 4, 5]  # Columns 1, 2, 3, 4, 5 and 6 (0-indexed)
-
-                # Get fund_id from fund_details table
-                fund_id = get_fund_id(sheet_name, filename)
 
                 # Define the starting row 2
                 start_row = 1  # Row 2 (0-indexed)
 
-                conn = db_connection()
-                cursor = conn.cursor()
+                print("fund_id:", fund_id)
 
-                # Loop through rows starting from the 2nd row
-                for row_idx in range(start_row, worksheet.nrows):
+                if fund_id:
+                    print("fund_id Available")
 
-                    row_val = worksheet.cell_value(row_idx, 0)
-                    row_val5 = worksheet.cell_value(row_idx, 5)
+                    # Update flag in the stock_details table if fund_id is available
+                    update_flag_stocks(fund_id)
 
-                    # Check if the value in column 1 and column 6 is not null
-                    if row_val and row_val5:
+                    conn = db_connection()
+                    cursor = conn.cursor()
 
-                        for col_idx in columns_to_read:
-                            cell_value_5 = str(worksheet.cell_value(row_idx, 5)).replace('$', '').replace('%', '')
-                            cell_val_5 = round(float(cell_value_5) * 100, 2)
+                    # Loop through rows starting from the 2nd row
+                    for row_idx in range(start_row, worksheet.nrows):
 
-                        try:
-                            # Insert data into the database in stock_details table
-                            cursor.execute('''INSERT INTO mutual_fund_data.stock_details(fund_id, created_date, 
-                            mon_yr, category, isin_no, stock_name, industry, quantity, amount, holding_share) 
-                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
-                                           (fund_id,
-                                            current_date,
-                                            mon_yr,
-                                            category,
-                                            worksheet.cell_value(row_idx, 0),
-                                            worksheet.cell_value(row_idx, 1),
-                                            worksheet.cell_value(row_idx, 2),
-                                            worksheet.cell_value(row_idx, 3),
-                                            worksheet.cell_value(row_idx, 4),
-                                            cell_val_5))
+                        row_val = worksheet.cell_value(row_idx, 0)
+                        row_val5 = worksheet.cell_value(row_idx, 5)
 
-                        except Exception as e:
-                            print("Issue occurred inserting data into database in stock_details table!!!", str(e))
+                        # Check if the value in column 1 and column 6 is not null
+                        if row_val and row_val5:
 
-                conn.commit()
-                conn.close()
+                            for col_idx in columns_to_read:
+                                cell_value_5 = str(worksheet.cell_value(row_idx, 5)).replace('$', '').replace('%', '')
+                                cell_val_5 = round(float(cell_value_5) * 100, 2)
 
-                print("Data inserted successfully in the stock_details table for {} Sheet!!!".format(sheet_name))
+                            try:
+                                # Insert data into the database in stock_details table
+                                cursor.execute('''INSERT INTO mutual_fund_data.stock_details(fund_id, created_date, 
+                                        mon_yr, category, isin_no, stock_name, industry, quantity, amount, 
+                                        holding_share, is_current_mon) 
+                                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+                                               (fund_id, current_date, mon_yr, category,
+                                                worksheet.cell_value(row_idx, 0),
+                                                worksheet.cell_value(row_idx, 1),
+                                                worksheet.cell_value(row_idx, 2),
+                                                worksheet.cell_value(row_idx, 3),
+                                                worksheet.cell_value(row_idx, 4),
+                                                cell_val_5, "Y"))
+
+                            except Exception as e:
+                                print("Issue occurred inserting data into database in stock_details table!!!", str(e))
+
+                    conn.commit()
+                    conn.close()
+
+                    print("Data inserted successfully in the stock_details table for {} Sheet!!!".format(sheet_name))
+
+                else:
+                    print("fund_id not Available")
+
+                    # Insert data in the fund_details table
+                    insert_in_fund_table(current_date, sheet_name, filename)
+
+                    # Get fund_id from fund_details table
+                    fund_id = get_fund_id(sheet_name, filename)
+
+                    conn = db_connection()
+                    cursor = conn.cursor()
+
+                    # Loop through rows starting from the 2nd row
+                    for row_idx in range(start_row, worksheet.nrows):
+
+                        row_val = worksheet.cell_value(row_idx, 0)
+                        row_val5 = worksheet.cell_value(row_idx, 5)
+
+                        # Check if the value in column 1 and column 6 is not null
+                        if row_val and row_val5:
+
+                            for col_idx in columns_to_read:
+                                cell_value_5 = str(worksheet.cell_value(row_idx, 5)).replace('$', '').replace('%', '')
+                                cell_val_5 = round(float(cell_value_5) * 100, 2)
+
+                            try:
+                                # Insert data into the database in stock_details table
+                                cursor.execute('''INSERT INTO mutual_fund_data.stock_details(fund_id, created_date, 
+                                        mon_yr, category, isin_no, stock_name, industry, quantity, amount, 
+                                        holding_share, is_current_mon) 
+                                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+                                               (fund_id, current_date, mon_yr, category,
+                                                worksheet.cell_value(row_idx, 0),
+                                                worksheet.cell_value(row_idx, 1),
+                                                worksheet.cell_value(row_idx, 2),
+                                                worksheet.cell_value(row_idx, 3),
+                                                worksheet.cell_value(row_idx, 4),
+                                                cell_val_5, "Y"))
+
+                            except Exception as e:
+                                print("Issue occurred inserting data into database in stock_details table!!!", str(e))
+
+                    conn.commit()
+                    conn.close()
+
+                    print("Data inserted successfully in the stock_details table for {} Sheet!!!".format(sheet_name))
 
     except Exception as e:
         print("Issue while working on reading excel!!!! ", str(e))
@@ -144,7 +194,7 @@ def insert_in_fund_table(current_date, sheet_name, filename):
         conn.close()
 
 
-def get_fund_id(category, filename):
+def get_fund_id(fund_name, filename):
     conn = db_connection()
     cursor = conn.cursor()
 
@@ -153,15 +203,40 @@ def get_fund_id(category, filename):
         house_name = filename.split('-')[0]
         fund_house = house_name + " Mutual Fund"
 
+        print("fund_house:", fund_house)
+        print("fund_name:", fund_name)
+
         # Get fund_id from fund_details table
+        # query = ("SELECT id FROM mutual_fund_data.fund_details WHERE fund_house = %s "
+        #          "and lower(fund_name) LIKE %s LIMIT 1")
         query = ("SELECT id FROM mutual_fund_data.fund_details WHERE fund_house = %s "
-                 "and lower(fund_name) LIKE %s LIMIT 1")
-        cursor.execute(query, (fund_house, '%' + category.lower() + '%',))
+                 "and lower(fund_name) = %s LIMIT 1")
+        cursor.execute(query, (fund_house, fund_name.lower()))
         res = cursor.fetchone()
         return res
 
     except Exception as e:
         print("Issue occurred while getting the fund_id from the fund_details table!!!", str(e))
+
+    finally:
+        conn.commit()
+        conn.close()
+
+
+def update_flag_stocks(fund_id):
+    conn = db_connection()
+    cursor = conn.cursor()
+    try:
+        print("fund_id:", fund_id)
+
+        query = ("UPDATE mutual_fund_data.stock_details SET is_current_mon = 'N' "
+                 "WHERE fund_id = %s AND is_current_mon = 'Y'")
+        cursor.execute(query, fund_id)
+        res = cursor.fetchone()
+        return res
+
+    except Exception as e:
+        print("Issue occurred while updating the flag for month in stock_details table!!!", str(e))
 
     finally:
         conn.commit()
