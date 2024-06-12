@@ -4,12 +4,14 @@ import time
 import json
 import os
 import shutil
-import process_date
+from process_date import DateDetails as Dd
 
 # Get the previous month
-prev_mon_name_MM = process_date.prev_mon_name_MM
+prev_mon_name_MM = Dd.prev_mon_name_MM
 # Get the current year YYYY
-current_year_yyyy = process_date.current_year_yyyy
+current_year_yyyy = Dd.current_year_yyyy
+# Get the previous month days
+days_in_month = Dd.days_in_month
 
 # with open("../config.json") as f:
 with open("config.json") as f:
