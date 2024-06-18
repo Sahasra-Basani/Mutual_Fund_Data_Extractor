@@ -42,9 +42,11 @@ driver.maximize_window()
 try:
     time.sleep(5)
 
+    print(f"Monthly portfolio for the month of {days_in_month} {prev_mon_name_MM} {current_year_yyyy}")
+
     # Find the label containing the desired text
     label_element = driver.find_element(By.XPATH,
-                                        f"//label[contains(text(), 'Monthly portfolio for the month of {prev_mon_name_MM} {current_year_yyyy}')]")
+                                        f"//label[contains(text(), 'Monthly portfolio for the month of {days_in_month} {prev_mon_name_MM}') and contains(text(),'{current_year_yyyy}')]")
 
     # Find the download link associated with the label
     download_link = label_element.find_element(By.XPATH,"../label/a[@class='xls']")
@@ -72,6 +74,8 @@ try:
     shutil.move(source_file_path, os.path.join(destination_dir, new_file))
 
     print("File moved to the location successfully!!!")
+
+    exit()
 
 finally:
     # Close the WebDriver
