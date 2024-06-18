@@ -1,3 +1,5 @@
 .idea
 database/__pycache__
 __pycache__
+excel/__pycache__
+selenium_script/__pycache__
